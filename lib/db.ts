@@ -8,20 +8,22 @@ function getMongoUri() {
   return uri;
 }
 
+function getDbName() {
+  return process.env.MONGODB_DB || 'cultushock';
+}
+
 async function getClient() {
   if (cachedClient) return cachedClient;
 
-  const uri = getMongoUri();
-  const client = new MongoClient(uri);
+  const client = new MongoClient(getMongoUri());
   await client.connect();
-
   cachedClient = client;
   return client;
 }
 
 export async function getDb(): Promise<Db> {
   const client = await getClient();
-  return client.db(); // uses DB name from URI
+  return client.db(getDbName()); // ✅ explicit
 }
 
 export async function getCollection<T extends Document = Document>(
