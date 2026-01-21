@@ -1,6 +1,6 @@
-import { ObjectId } from 'mongodb';
+import type { Document, ObjectId } from 'mongodb';
 
-export interface Product {
+export interface Product extends Document {
   _id?: ObjectId;
   productId: number;
   name: string;
