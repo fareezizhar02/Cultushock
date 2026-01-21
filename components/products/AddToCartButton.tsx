@@ -8,6 +8,7 @@ interface AddToCartButtonProps {
   price: number;
   selectedSize: string;
   quantity: number;
+  image: string; // ✅ Added image prop
   onSuccess?: () => void;
 }
 
@@ -17,6 +18,7 @@ export default function AddToCartButton({
   price,
   selectedSize,
   quantity,
+  image, // ✅ Destructure image
   onSuccess
 }: AddToCartButtonProps) {
   const { addToCart } = useCart();
@@ -27,7 +29,8 @@ export default function AddToCartButton({
       name: productName,
       price,
       size: selectedSize,
-      quantity
+      quantity,
+      image // ✅ Include image
     });
 
     // Optional success callback

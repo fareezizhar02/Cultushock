@@ -25,7 +25,8 @@ export default function CartPage() {
             fontWeight: 'bold',
             letterSpacing: '0.05em',
             color: '#000000',
-            marginBottom: '32px'
+            marginBottom: '32px',
+            marginTop: '60px',
           }}
         >
           YOUR CART
@@ -123,7 +124,7 @@ export default function CartPage() {
                     }}
                   >
                     <Image
-                      src="/images/products/tops-01.jpg"
+                      src={item.image || '/images/products/tops-01.jpg'}
                       alt={item.name}
                       fill
                       style={{ objectFit: 'cover' }}
@@ -148,10 +149,19 @@ export default function CartPage() {
                       style={{
                         fontSize: '14px',
                         color: '#6b7280',
-                        marginBottom: '8px'
+                        marginBottom: '4px'
                       }}
                     >
                       Size: {item.size}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '14px',
+                        color: '#6b7280',
+                        marginBottom: '8px'
+                      }}
+                    >
+                      RM {item.price.toFixed(2)}
                     </p>
                     <button
                       onClick={() => removeFromCart(item.productId, item.size)}
