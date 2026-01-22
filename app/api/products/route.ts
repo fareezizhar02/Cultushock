@@ -27,12 +27,14 @@ export async function GET(request: Request) {
       products: products,
       count: products.length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Products API error:", error);
+
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch products",
+        error: error?.message || String(error),
+        name: error?.name,
       },
       { status: 500 },
     );
