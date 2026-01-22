@@ -24,8 +24,7 @@ export default function NavLinks({ isHovered }: NavLinksProps) {
   return (
     <nav style={{ display: 'flex', alignItems: 'flex-start', gap: '32px' }}>
       {/* SHOP link */}
-      <Link 
-        href="/shop" 
+      <h3 
         style={{
           fontSize: '14px',
           fontWeight: 'normal',
@@ -37,7 +36,7 @@ export default function NavLinks({ isHovered }: NavLinksProps) {
         }}
       >
         SHOP
-      </Link>
+      </h3>
       
       {/* Nav links with nested structure */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '32px' }}>

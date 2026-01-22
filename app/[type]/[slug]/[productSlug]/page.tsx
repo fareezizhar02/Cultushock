@@ -20,7 +20,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
 
   // Fetch product data based on slug
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function ProductDetailPage() {
         if (data.success && data.data.length > 0) {
           const fetchedProduct = data.data[0];
           setProduct(fetchedProduct);
-          
+
           // Set default selections based on product data
           if (fetchedProduct.sizes && fetchedProduct.sizes.length > 0) {
             setSelectedSize(fetchedProduct.sizes[0]);
@@ -64,10 +64,16 @@ export default function ProductDetailPage() {
     console.log("Successfully added to cart!");
   };
 
-  const handleAddToWishlist = () => {
-    if (product) {
+  const handleAddToWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!product) return;
+
+    if (inWishlist) {
+      removeFromWishlist(product.productId);
+    } else {
       addToWishlist(product.productId);
-      alert("Added to wishlist!");
     }
   };
 
@@ -110,12 +116,13 @@ export default function ProductDetailPage() {
   }
 
   const inWishlist = isInWishlist(product.productId);
-  
+
   // Determine if Size selector should be shown
-  const showSizeSelector = product.sizes && 
-    product.sizes.length > 0 && 
-    product.sizes[0] !== 'One Size';
-  
+  const showSizeSelector =
+    product.sizes &&
+    product.sizes.length > 0 &&
+    product.sizes[0] !== "One Size";
+
   // Determine if Colour selector should be shown
   const showColourSelector = product.colors && product.colors.length >= 2;
 
@@ -305,7 +312,8 @@ export default function ProductDetailPage() {
                           selectedColour === color ? "#000000" : "transparent",
                         color: selectedColour === color ? "#ffffff" : "#000000",
                         fontSize: "14px",
-                        fontWeight: selectedColour === color ? "bold" : "normal",
+                        fontWeight:
+                          selectedColour === color ? "bold" : "normal",
                         cursor: "pointer",
                         transition: "all 0.2s",
                         letterSpacing: "0.05em",
@@ -427,6 +435,7 @@ export default function ProductDetailPage() {
             {/* Add to Wishlist Button */}
             <button
               onClick={handleAddToWishlist}
+              type="button"
               style={{
                 width: "100%",
                 marginTop: "16px",
