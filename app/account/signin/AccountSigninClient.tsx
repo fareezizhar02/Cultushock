@@ -169,6 +169,7 @@ export default function AccountSigninClient() {
                       outline: 'none',
                       marginBottom: '14px',
                       opacity: isSubmitting ? 0.7 : 1,
+                      color: '#111827',
                     }}
                     onFocus={(e) => (e.currentTarget.style.borderColor = '#111827')}
                     onBlur={(e) => (e.currentTarget.style.borderColor = '#d1d5db')}
@@ -191,6 +192,7 @@ export default function AccountSigninClient() {
                       outline: 'none',
                       marginBottom: '18px',
                       opacity: isSubmitting ? 0.7 : 1,
+                      color: '#111827',
                     }}
                     onFocus={(e) => (e.currentTarget.style.borderColor = '#111827')}
                     onBlur={(e) => (e.currentTarget.style.borderColor = '#d1d5db')}
