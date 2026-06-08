@@ -23,7 +23,8 @@ export const NAV_LINKS = [
     subItems: [
       { label: 'Tops', href: '/collections/tops' },
       { label: 'Caps', href: '/collections/caps' },
-      { label: 'Bags', href: '/collections/bags' }
+      { label: 'Bags', href: '/collections/bags' },
+      { label: 'Cases', href: '/collections/cases' }
     ]
   },
   { 

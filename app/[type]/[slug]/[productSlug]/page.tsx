@@ -241,7 +241,7 @@ export default function ProductDetailPage() {
                     letterSpacing: "0.05em",
                   }}
                 >
-                  Size
+                  {product.collection === 'cases' ? 'Model' : 'Size'}
                 </label>
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   {product.sizes.map((size) => (
