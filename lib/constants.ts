@@ -22,6 +22,7 @@ export const NAV_LINKS = [
     href: '/collections',
     subItems: [
       { label: 'Tops', href: '/collections/tops' },
+      { label: 'Bottoms', href: '/collections/bottoms' },
       { label: 'Caps', href: '/collections/caps' },
       { label: 'Bags', href: '/collections/bags' },
       { label: 'Cases', href: '/collections/cases' }
