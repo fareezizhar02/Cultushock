@@ -13,7 +13,6 @@ interface Product {
   name: string;
   slug: string;
   collection: string;
-  price: number;
   images: string[];
 }
 
@@ -77,7 +76,6 @@ export default function SearchBar({ isHovered }: SearchBarProps) {
           type: 'product',
           label: p.name,
           href: `/collections/${p.collection}/${p.slug}`,
-          sublabel: `RM${p.price} · ${p.collection.charAt(0).toUpperCase() + p.collection.slice(1)}`,
         }));
 
       const combined = [...matchedCollections, ...matchedProducts].slice(0, 8);

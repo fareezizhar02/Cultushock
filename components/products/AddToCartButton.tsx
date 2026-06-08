@@ -5,21 +5,25 @@ import { useCart } from '@/contexts/CartContext';
 interface AddToCartButtonProps {
   productId: number;
   productName: string;
-  price: number;
+  priceMYR: number;
+  priceIDR: number;
+  priceSGD: number;
   selectedSize: string;
   quantity: number;
-  image: string; // ✅ Added image prop
+  image: string;
   onSuccess?: () => void;
 }
 
 export default function AddToCartButton({
   productId,
   productName,
-  price,
+  priceMYR,
+  priceIDR,
+  priceSGD,
   selectedSize,
   quantity,
-  image, // ✅ Destructure image
-  onSuccess
+  image,
+  onSuccess,
 }: AddToCartButtonProps) {
   const { addToCart } = useCart();
 
@@ -27,23 +31,14 @@ export default function AddToCartButton({
     addToCart({
       productId,
       name: productName,
-      price,
+      priceMYR,
+      priceIDR,
+      priceSGD,
       size: selectedSize,
       quantity,
-      image // ✅ Include image
+      image,
     });
-
-    // Optional success callback
-    if (onSuccess) {
-      onSuccess();
-    }
-
-    // Optional: Show toast notification
-    console.log('Added to cart:', {
-      product: productName,
-      size: selectedSize,
-      quantity
-    });
+    if (onSuccess) onSuccess();
   };
 
   return (
@@ -59,14 +54,10 @@ export default function AddToCartButton({
         letterSpacing: '0.1em',
         border: 'none',
         cursor: 'pointer',
-        transition: 'all 0.2s'
+        transition: 'all 0.2s',
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = '#1f2937';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = '#000000';
-      }}
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1f2937')}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#000000')}
     >
       ADD TO CART
     </button>

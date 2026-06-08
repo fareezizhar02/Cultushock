@@ -7,40 +7,36 @@ import Image from 'next/image';
 import Link from 'next/link';
 import WishlistIcon from '@/components/products/WishlistIcon';
 import { Product } from '@/lib/types';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 export default function ListingPage() {
   const params = useParams();
-  const type = params.type as string; // "collections" or "categories"
-  const slug = params.slug as string; // "tops", "bottoms", "streetwear", etc.
-  
+  const type = params.type as string;
+  const slug = params.slug as string;
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        // Determine which field to query based on type
         const queryParam = type === 'collections' ? 'collection' : 'category';
         const response = await fetch(`/api/products?${queryParam}=${slug}`);
         const data = await response.json();
-        
-        if (data.success) {
-          setProducts(data.products);
-        }
+        if (data.success) setProducts(data.products);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
         setLoading(false);
       }
     }
-
-    if (type && slug) {
-      fetchProducts();
-    }
+    if (type && slug) fetchProducts();
   }, [type, slug]);
 
-  // Capitalize first letter for display
-  const pageTitle = slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : '';
+  const pageTitle = slug
+    ? slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    : '';
 
   if (loading) {
     return (
@@ -60,21 +56,21 @@ export default function ListingPage() {
       <Header lightBackground={true} />
 
       <main style={{ paddingTop: '140px' }}>
-        <div 
-          style={{ 
+        <div
+          style={{
             borderTop: '1px solid #000000',
             borderBottom: '1px solid #000000',
-            padding: '32px 48px'
+            padding: '32px 48px',
           }}
         >
-          <h1 
-            style={{ 
+          <h1
+            style={{
               fontSize: '48px',
               fontWeight: 'bold',
               letterSpacing: '0.05em',
               color: '#000000',
               margin: 0,
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
             }}
           >
             {pageTitle}
@@ -87,13 +83,13 @@ export default function ListingPage() {
               <p style={{ fontSize: '18px', color: '#666666' }}>No products found.</p>
             </div>
           ) : (
-            <div 
-              style={{ 
+            <div
+              style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(4, 1fr)',
                 gap: '32px',
                 maxWidth: '1920px',
-                margin: '0 auto'
+                margin: '0 auto',
               }}
             >
               {products.map((product) => (
@@ -105,18 +101,18 @@ export default function ListingPage() {
                     color: 'inherit',
                     cursor: 'pointer',
                     transition: 'transform 0.3s',
-                    display: 'block'
+                    display: 'block',
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-8px)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
                       position: 'relative',
                       width: '100%',
                       aspectRatio: '1',
                       backgroundColor: '#ffffff',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
                     }}
                   >
                     <Image
@@ -126,29 +122,28 @@ export default function ListingPage() {
                       style={{ objectFit: 'contain' }}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
-                    
                     <WishlistIcon productId={product.productId} />
                   </div>
 
                   <div style={{ marginTop: '16px' }}>
-                    <h3 
-                      style={{ 
+                    <h3
+                      style={{
                         fontSize: '16px',
                         fontWeight: 'normal',
                         color: '#000000',
-                        marginBottom: '8px'
+                        marginBottom: '8px',
                       }}
                     >
                       {product.name}
                     </h3>
-                    <p 
-                      style={{ 
+                    <p
+                      style={{
                         fontSize: '14px',
                         fontWeight: 'bold',
-                        color: '#000000'
+                        color: '#000000',
                       }}
                     >
-                      RM {product.price.toFixed(2)}
+                      {formatPrice(product.priceMYR, product.priceIDR, product.priceSGD)}
                     </p>
                   </div>
                 </Link>

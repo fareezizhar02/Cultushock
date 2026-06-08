@@ -1,38 +1,30 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useCurrency, CURRENCIES } from '@/contexts/CurrencyContext';
 
 interface CurrencyProps {
   isHovered: boolean;
 }
 
-const CURRENCIES = [
-  { country: 'Malaysia', code: 'MYR' },
-  { country: 'Indonesia', code: 'IDR' },
-  { country: 'Singapore', code: 'SGD' }
-];
-
 export default function Currency({ isHovered }: CurrencyProps) {
-  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
+  const { currency, setCurrency } = useCurrency();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
     <div ref={dropdownRef} style={{ position: 'relative' }}>
-      {/* Currency Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -48,22 +40,21 @@ export default function Currency({ isHovered }: CurrencyProps) {
           padding: 0,
           display: 'flex',
           alignItems: 'center',
-          gap: '6px'
+          gap: '6px',
         }}
-        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}
+        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
-        {selectedCurrency.country.toUpperCase()} ({selectedCurrency.code})
-        <ChevronDown 
-          size={14} 
-          style={{ 
+        {currency.country.toUpperCase()} ({currency.code})
+        <ChevronDown
+          size={14}
+          style={{
             transition: 'transform 0.2s',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-          }} 
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
         />
       </button>
 
-      {/* Dropdown Menu */}
       {isOpen && (
         <div
           style={{
@@ -77,14 +68,14 @@ export default function Currency({ isHovered }: CurrencyProps) {
             overflow: 'hidden',
             minWidth: '200px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
-          {CURRENCIES.map((currency) => (
+          {CURRENCIES.map((c) => (
             <button
-              key={currency.code}
+              key={c.code}
               onClick={() => {
-                setSelectedCurrency(currency);
+                setCurrency(c);
                 setIsOpen(false);
               }}
               style={{
@@ -93,30 +84,31 @@ export default function Currency({ isHovered }: CurrencyProps) {
                 fontSize: '14px',
                 fontWeight: 'normal',
                 letterSpacing: '0.05em',
-                background: selectedCurrency.code === currency.code 
-                  ? (isHovered ? '#f3f4f6' : 'rgba(255, 255, 255, 0.1)')
-                  : 'transparent',
+                background:
+                  currency.code === c.code
+                    ? isHovered
+                      ? '#f3f4f6'
+                      : 'rgba(255, 255, 255, 0.1)'
+                    : 'transparent',
                 border: 'none',
                 color: isHovered ? '#000000' : '#ffffff',
                 cursor: 'pointer',
                 textAlign: 'left',
                 transition: 'background-color 0.2s',
-                display: 'block'
+                display: 'block',
               }}
               onMouseEnter={(e) => {
-                if (selectedCurrency.code !== currency.code) {
-                  e.currentTarget.style.backgroundColor = isHovered 
-                    ? '#f9fafb' 
+                if (currency.code !== c.code)
+                  e.currentTarget.style.backgroundColor = isHovered
+                    ? '#f9fafb'
                     : 'rgba(255, 255, 255, 0.05)';
-                }
               }}
               onMouseLeave={(e) => {
-                if (selectedCurrency.code !== currency.code) {
+                if (currency.code !== c.code)
                   e.currentTarget.style.backgroundColor = 'transparent';
-                }
               }}
             >
-              {currency.country.toUpperCase()} ({currency.code})
+              {c.country.toUpperCase()} ({c.code})
             </button>
           ))}
         </div>

@@ -6,7 +6,9 @@ export interface Product extends Document {
   name: string;
   slug: string;
   description: string;
-  price: number;
+  priceMYR: number;
+  priceIDR: number;
+  priceSGD: number;
   images: string[];
   collection: string;
   category: string;

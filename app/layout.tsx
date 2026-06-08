@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { WishlistProvider } from '@/contexts/WishlistContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { CurrencyProvider } from '@/contexts/CurrencyContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <CartProvider>
-          <WishlistProvider>
-            {children}
-          </WishlistProvider>
-        </CartProvider>
+        <CurrencyProvider>
+          <CartProvider>
+            <WishlistProvider>
+              {children}
+            </WishlistProvider>
+          </CartProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

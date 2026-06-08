@@ -4,13 +4,40 @@ import Header from '@/components/header/Header';
 import Image from 'next/image';
 import { Plus, Minus, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { currency, formatPrice } = useCurrency();
+
+  const cartTotal = getCartTotal(currency.code);
 
   const handleQuantityChange = (productId: number, size: string, currentQuantity: number, change: number) => {
     const newQuantity = Math.max(1, currentQuantity + change);
     updateQuantity(productId, size, newQuantity);
+  };
+
+  const formatItemPrice = (item: { priceMYR: number; priceIDR: number; priceSGD: number }) => {
+    return formatPrice(item.priceMYR, item.priceIDR, item.priceSGD);
+  };
+
+  const formatItemTotal = (item: { priceMYR: number; priceIDR: number; priceSGD: number; quantity: number }) => {
+    const price =
+      currency.code === 'IDR' ? item.priceIDR :
+      currency.code === 'SGD' ? item.priceSGD :
+      item.priceMYR;
+    const total = price * item.quantity;
+    if (currency.code === 'IDR') {
+      return `${currency.symbol} ${total.toLocaleString('id-ID')}`;
+    }
+    return `${currency.symbol} ${total.toFixed(2)}`;
+  };
+
+  const formatTotal = () => {
+    if (currency.code === 'IDR') {
+      return `${currency.symbol} ${cartTotal.toLocaleString('id-ID')}`;
+    }
+    return `${currency.symbol} ${cartTotal.toFixed(2)}`;
   };
 
   return (
@@ -33,12 +60,7 @@ export default function CartPage() {
         </h1>
 
         {/* Cart Items Container */}
-        <div
-          style={{
-            borderTop: '1px solid #e5e7eb',
-            borderBottom: '1px solid #e5e7eb'
-          }}
-        >
+        <div style={{ borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb' }}>
           {/* Header Row */}
           <div
             style={{
@@ -46,56 +68,17 @@ export default function CartPage() {
               gridTemplateColumns: '2fr 1fr 1fr',
               gap: '32px',
               padding: '24px 0',
-              borderBottom: '1px solid #e5e7eb'
+              borderBottom: '1px solid #e5e7eb',
             }}
           >
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 'bold',
-                letterSpacing: '0.1em',
-                color: '#9ca3af',
-                textTransform: 'uppercase'
-              }}
-            >
-              PRODUCT
-            </div>
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 'bold',
-                letterSpacing: '0.1em',
-                color: '#9ca3af',
-                textTransform: 'uppercase',
-                textAlign: 'center'
-              }}
-            >
-              QUANTITY
-            </div>
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 'bold',
-                letterSpacing: '0.1em',
-                color: '#9ca3af',
-                textTransform: 'uppercase',
-                textAlign: 'right'
-              }}
-            >
-              TOTAL
-            </div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase' }}>PRODUCT</div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', textAlign: 'center' }}>QUANTITY</div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', textAlign: 'right' }}>TOTAL</div>
           </div>
 
           {/* Cart Items */}
           {cartItems.length === 0 ? (
-            <div
-              style={{
-                padding: '64px 0',
-                textAlign: 'center',
-                color: '#9ca3af',
-                fontSize: '16px'
-              }}
-            >
+            <div style={{ padding: '64px 0', textAlign: 'center', color: '#9ca3af', fontSize: '16px' }}>
               Your cart is empty
             </div>
           ) : (
@@ -108,21 +91,12 @@ export default function CartPage() {
                   gap: '32px',
                   padding: '32px 0',
                   borderBottom: '1px solid #e5e7eb',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}
               >
                 {/* Product Info */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                  {/* Product Image */}
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '120px',
-                      height: '120px',
-                      backgroundColor: '#f5f5f5',
-                      flexShrink: 0
-                    }}
-                  >
+                  <div style={{ position: 'relative', width: '120px', height: '120px', backgroundColor: '#f5f5f5', flexShrink: 0 }}>
                     <Image
                       src={item.image || '/images/products/tops-01.jpg'}
                       alt={item.name}
@@ -131,141 +105,76 @@ export default function CartPage() {
                       sizes="120px"
                     />
                   </div>
-
-                  {/* Product Details */}
                   <div style={{ flex: 1 }}>
-                    <h3
-                      style={{
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        color: '#000000',
-                        marginBottom: '8px',
-                        letterSpacing: '0.05em'
-                      }}
-                    >
+                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#000000', marginBottom: '8px', letterSpacing: '0.05em' }}>
                       {item.name}
                     </h3>
-                    <p
-                      style={{
-                        fontSize: '14px',
-                        color: '#6b7280',
-                        marginBottom: '4px'
-                      }}
-                    >
-                      Size: {item.size}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: '14px',
-                        color: '#6b7280',
-                        marginBottom: '8px'
-                      }}
-                    >
-                      RM {item.price.toFixed(2)}
+                    <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>Size: {item.size}</p>
+                    <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>
+                      {formatItemPrice(item)}
                     </p>
                     <button
                       onClick={() => removeFromCart(item.productId, item.size)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        gap: '4px',
                         fontSize: '12px',
-                        color: '#ef4444',
+                        color: '#9ca3af',
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer',
                         padding: 0,
-                        transition: 'opacity 0.2s'
+                        letterSpacing: '0.05em',
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = '#000000')}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = '#9ca3af')}
                     >
-                      <X size={14} />
-                      Remove
+                      <X size={12} /> REMOVE
                     </button>
                   </div>
                 </div>
 
                 {/* Quantity Controls */}
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0' }}>
                   <button
                     onClick={() => handleQuantityChange(item.productId, item.size, item.quantity, -1)}
-                    disabled={item.quantity <= 1}
                     style={{
-                      width: '32px',
-                      height: '32px',
+                      width: '32px', height: '32px',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '50%',
-                      backgroundColor: item.quantity <= 1 ? '#f5f5f5' : 'transparent',
-                      color: item.quantity <= 1 ? '#9ca3af' : '#000000',
-                      cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s'
+                      backgroundColor: 'transparent',
+                      cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.2s',
                     }}
-                    onMouseEnter={(e) => {
-                      if (item.quantity > 1) {
-                        e.currentTarget.style.backgroundColor = '#f5f5f5';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (item.quantity > 1) {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }
-                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
-                    <Minus size={14} />
+                    <Minus size={14} color="#000000" />
                   </button>
-
-                  <span
-                    style={{
-                      fontSize: '16px',
-                      fontWeight: 'normal',
-                      color: '#000000',
-                      minWidth: '30px',
-                      textAlign: 'center'
-                    }}
-                  >
-                    {item.quantity}
-                  </span>
-
+                  <span style={{ width: '40px', textAlign: 'center', fontSize: '16px', fontWeight: 'bold', color: '#000000' }}>
+  {item.quantity}
+</span>
                   <button
                     onClick={() => handleQuantityChange(item.productId, item.size, item.quantity, 1)}
                     style={{
-                      width: '32px',
-                      height: '32px',
+                      width: '32px', height: '32px',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '50%',
                       backgroundColor: 'transparent',
-                      color: '#000000',
                       cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s'
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.2s',
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f5f5f5';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
-                    <Plus size={14} />
+                    <Plus size={14} color="#000000" />
                   </button>
                 </div>
 
                 {/* Total Price */}
-                <div
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    color: '#000000',
-                    textAlign: 'right'
-                  }}
-                >
-                  RM {(item.price * item.quantity).toFixed(2)}
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#000000', textAlign: 'right' }}>
+                  {formatItemTotal(item)}
                 </div>
               </div>
             ))
@@ -274,45 +183,14 @@ export default function CartPage() {
 
         {/* Cart Summary */}
         {cartItems.length > 0 && (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginTop: '48px'
-            }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '48px' }}>
             <div style={{ width: '400px' }}>
-              {/* Subtotal */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '24px'
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    color: '#000000',
-                    letterSpacing: '0.05em'
-                  }}
-                >
-                  SUBTOTAL
-                </span>
-                <span
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    color: '#000000'
-                  }}
-                >
-                  RM {cartTotal.toFixed(2)}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#000000', letterSpacing: '0.05em' }}>SUBTOTAL</span>
+                <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#000000' }}>
+                  {formatTotal()}
                 </span>
               </div>
-
-              {/* Checkout Button */}
               <button
                 style={{
                   width: '100%',
@@ -325,14 +203,10 @@ export default function CartPage() {
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  borderRadius: '4px'
+                  borderRadius: '4px',
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#1f2937';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#000000';
-                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1f2937')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#000000')}
               >
                 CHECKOUT
               </button>

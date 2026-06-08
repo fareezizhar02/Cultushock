@@ -5,6 +5,7 @@ import SearchBar from './SearchBar';
 import AccountButton from './AccountButton';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
+import Currency from './Currency';
 
 interface UserActionsProps {
   isHovered: boolean;
@@ -60,7 +61,7 @@ export default function UserActions({ isHovered }: UserActionsProps) {
           gap: '32px',
         }}
       >
-        {/* <Currency isHovered={isHovered} /> */}
+        <Currency isHovered={isHovered} />
 
         <Link
           href="/wishlist"
